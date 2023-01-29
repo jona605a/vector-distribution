@@ -45,7 +45,7 @@ AllVectors = transform(AllVectors, :"Lyngby/Ballerup" => ByRow(x -> x=="B") => :
 
 V = size(AllVectors, 1)
 
-Femaleratio = size(subset(AllVectors, :"Sex" => a-> isequal.(a,"F")))[1] / V
+AvgMaleRatio = size(subset(AllVectors, :"Male" => a->a))[1] / V
 AvgSndTime = size(subset(AllVectors, :"Has been vector before" => a->a))[1] / V
 AvgDrivers = size(subset(AllVectors, :">20 og kørekort i min. 1 år" => a->a))[1] / V
 AvgSmokers = size(subset(AllVectors, :"Smoker" => a->a))[1] / V
