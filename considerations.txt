@@ -1,13 +1,44 @@
-Current considerations and rules
+When creating the cross teams (and solving these distribution problems in general), there are two types of ways to get a good solution: making a strict rule and making a want. Strict rules are always enforced (but too many will create a situation where no solution is possible) and wants tell the program what to prioritize. Every want can have a weight that says how important it is. These are not decided yet.
 
+--- Strict Rules ---
+
+Each vector is put on one cross team.
+Each cross team gets the correct number of vectors.
+Vectors cannot be on a cross team whose KABS is the vector's study line KABS.
+There can be at most one vector from each study line on a cross team. (exceptions may apply)
+
+If there are any Ballerup vectors on a team, there has to be at least two.
+If there are any female vectors on a team, there has to be at least two.
+If there are any male vectors on a team, there has to be at least two.
+
+For certain study lines, some additional rules apply for the cross teams. Some study lines have buddy teams, where e.g. a Space and Fysnan vector is a pair on cross teams.
+
+
+--- Wants ---
+
+Each team should have a gender distribution as close as possible to the average. This also takes the KABS' gender into account.
+Each team should have at least 1 person living on campus (for vector meeting purposes). This also takes the KABS into account.
+
+The following vectors should be distributed evenly across teams (regardless of team size):
+    Vectors with drivers' license
+    Second-time vectors
+    Vectors with sewing machines
+    Vectors who smoke
+
+GE vectors should be evenly distributed across mix teams.
+
+The average "power level" value of vectors on a team should be the same on each team. Weird name but it roughly means "extrovertedness".
+
+From the vector interview, vectors give their preferences towards the different types of trips.
+The preferences are: 1) Very yes 2) Ok 3) No. In Danish: 1) Meget gerne 2) Ok 3) Nej.
+Vectors put on a trip they really want gets a positive score, an "ok" trip is neutral and vectors on a trip they don't want is a large negative.
+The same logic is true for the sizes of trips, excpet then the answers are Yes/No for each size. The team sizes are Small (6-7 vectors), Medium (8-10 vectors) and Large (11+ vectors) team.
 
 
 
 
 Questions for KABS23
 
-Should it be taken into acc
-
-
+Should the KABS be taken into account when counting vectors with drivers' license? An option could be that a KABS can say "Yes, could me as a driver". This would result in that trip gaining one vector-driver fewer (on average).
 
 

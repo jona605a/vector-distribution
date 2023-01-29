@@ -33,10 +33,13 @@ println("Defining model...")
 @variable(Prob, AbsSndTime[1:N]>=0)
 @variable(Prob, AbsDrivers[1:N]>=0)
 @variable(Prob, AbsSmokers[1:N]>=0)
+@variable(Prob, AbsPowerLevel[1:N]>=0)
+@variable(Prob, VectorUnSatisfiedwithTripSize[1:V,1:N], Bin)
 
 # Helper variables
 @variable(Prob, HasBallerupVector[1:N], Bin)
 @variable(Prob, HasFemale[1:N], Bin)
+@variable(Prob, HasMale[1:N], Bin)
 
 @objective(Prob,Max,
     - sum(MoreMales[n] for n=1:N)
@@ -46,6 +49,7 @@ println("Defining model...")
     - sum(AbsSndTime[n] for n=1:N)
     - sum(AbsDrivers[n] for n=1:N)
     - sum(AbsSmokers[n] for n=1:N)
+    - 100*sum(VectorUnSatisfiedwithTripSize[v,n] for v=1:V,n=1:N)
 )
 
 @constraint(Prob, [n=1:N], sum(Assign[v,n] for v=1:V) <= VectorsPerTrip[n]) # Each trip gets the vectors it needs
@@ -72,6 +76,7 @@ end
 DistributeEvenly("Smoker", AbsSmokers)
 DistributeEvenly("Has been vector before", AbsSndTime)
 DistributeEvenly(">20 og kørekort i min. 1 år", AbsDrivers)
+DistributeEvenly("Power level", AbsPowerLevel)
 
 # If there are any Ballerup vectors, there has to be at least 2
 @constraint(Prob, [n=1:N], sum(Assign[v,n]*AllVectors[v,"Ballerup"] for v=1:V) <= HasBallerupVector[n] * VectorsPerTrip[n])
@@ -80,6 +85,10 @@ DistributeEvenly(">20 og kørekort i min. 1 år", AbsDrivers)
 # If there are any female vectors, there has to be at least 2
 @constraint(Prob, [n=1:N], sum(Assign[v,n]*(1-AllVectors[v,"Male"]) for v=1:V) <= HasFemale[n] * VectorsPerTrip[n])
 @constraint(Prob, [n=1:N], sum(Assign[v,n]*(1-AllVectors[v,"Male"]) for v=1:V) >= HasFemale[n] * 2)
+
+# If there are any male vectors, there has to be at least 2
+@constraint(Prob, [n=1:N], sum(Assign[v,n]*AllVectors[v,"Male"] for v=1:V) <= HasMale[n] * VectorsPerTrip[n])
+@constraint(Prob, [n=1:N], sum(Assign[v,n]*AllVectors[v,"Male"] for v=1:V) >= HasMale[n] * 2)
 
 # show(names(Vbygdes)) # gives the following:
 # ["Want to hire", "Name", "Has been vector before", "Wants Small Trip", "Wants Medium Tri", "Wants Large Trip", 
@@ -101,11 +110,19 @@ DistributeEvenly(">20 og kørekort i min. 1 år", AbsDrivers)
 # Medium trip: 8-10 vectors
 # Large trip:  11+ vectors
 
-MediumAmount = 8 # Up to discussion
-LargeAmount = 11 # Up to discussion
+@constraint(Prob, [n=1:N,v=1:V], Assign[v,n] <= 
+                                    AllVectors[v,"Wants Small Trip"] * (      Rustripsdata[n,"Vectors per trip"] <= 7 ) + 
+                                    AllVectors[v,"Wants Medium Tri"] * (8 <=  Rustripsdata[n,"Vectors per trip"] <= 10) + 
+                                    AllVectors[v,"Wants Large Trip"] * (11 <= Rustripsdata[n,"Vectors per trip"]      ) +
+                                    VectorUnSatisfiedwithTripSize[v,n]    ) # Define VectorUnSatisfiedwithTripSize
 
+#@constraint(Prob, [n=1:N,v=1:V], Assign[v,n] <= )
 
-
+# Distribute GE vectors evenly on mix trips
+MixtripIndices = [1,2,3,4]
+GEvectors = size(subset(AllVectors, "Study line team" => a-> a == "General Engineering"))[1]
+@constraint(Prob, [n=1:N],   sum(Assign[v,n]*AllVectors[v,columnname] for v=1:V) - AvgValue  <= variablename[n])
+@constraint(Prob, [n=1:N], -(sum(Assign[v,n]*AllVectors[v,columnname] for v=1:V) - AvgValue) <= variablename[n])
 
 #************************************************************************
 println("Solving...")
