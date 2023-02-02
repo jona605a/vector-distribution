@@ -4,7 +4,7 @@ When creating the cross teams (and solving these distribution problems in genera
 
 Each vector is put on one cross team.
 Each cross team gets the correct number of vectors.
-Vectors cannot be on a cross team whose KABS is the vector's study line KABS.
+Vectors cannot be on a cross team whose KABS is the vector's study line KABS (except GE).
 There can be at most one vector from each study line on a cross team. (exceptions may apply)
 
 If there are any Ballerup vectors on a team, there has to be at least two.

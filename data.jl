@@ -6,12 +6,12 @@ Rustripsdata = CSV.read("Data/Rustripsdata.csv", DataFrame)
 
 N = size(Rustripsdata,1)
 
-RustripName     = Rustripsdata[:,1]
-RustripLanguage = Rustripsdata[:,2]
-RustripWeekend  = Rustripsdata[:,3]
-RustripAlcohol  = Rustripsdata[:,4]
-VectorsPerTrip  = Rustripsdata[:,5]
-KABSforTrip     = Rustripsdata[:,6]
+# RustripName     = Rustripsdata[:,1]
+# RustripLanguage = Rustripsdata[:,2]
+# RustripWeekend  = Rustripsdata[:,3]
+# RustripAlcohol  = Rustripsdata[:,4]
+# VectorsPerTrip  = Rustripsdata[:,5]
+# KABSforTrip     = Rustripsdata[:,6]
 
 
 
@@ -40,9 +40,6 @@ AllVectors = transform(AllVectors, :"Lyngby/Ballerup" => ByRow(x -> x=="B") => :
 
 # collect(eachsplit(StudylineKABS[findfirst(y->y=="D. Produktion", StudylineKABS[:,1]) , 2],","))
 
-
-# show(names(AllVectors)) # gives the following:
-
 V = size(AllVectors, 1)
 
 AvgMaleRatio = size(subset(AllVectors, :"Male" => a->a))[1] / V
@@ -50,5 +47,5 @@ AvgSndTime = size(subset(AllVectors, :"Has been vector before" => a->a))[1] / V
 AvgDrivers = size(subset(AllVectors, :">20 og kørekort i min. 1 år" => a->a))[1] / V
 AvgSmokers = size(subset(AllVectors, :"Smoker" => a->a))[1] / V
 
-
+StudyLinesWithMoreVectorsOnSameTrip = ["General Engineering"]
 
