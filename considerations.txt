@@ -17,7 +17,7 @@ For certain study lines, some additional rules apply for the cross teams. Some s
 --- Wants ---
 
 Each team should have a gender distribution as close as possible to the average. This also takes the KABS' gender into account.
-Each team should have at least 1 person living on campus (for vector meeting purposes). This also takes the KABS into account.
+Each team should have at least 1 person living on campus (for vector meeting purposes). This also takes the KABS into account. *(missing)
 
 The following vectors should be distributed evenly across teams (regardless of team size):
     Vectors with drivers' license

@@ -26,8 +26,7 @@ println("Defining model...")
 @variable(Prob, SameTeam[1:V,1:V], Bin)
 
 # Slack variables (should be penalized)
-@variable(Prob, MoreMales[1:N]>=0)
-@variable(Prob, MoreFemales[1:N]>=0)
+@variable(Prob, AbsGender[1:N]>=0)
 @variable(Prob, FewerSew[1:N]>=0)
 @variable(Prob, NoCampus[1:N]>=0)
 @variable(Prob, AbsSndTime[1:N]>=0)
@@ -48,8 +47,8 @@ println("Defining model...")
 @constraint(Prob, [n=1:N,v=1:V,v2=1:V], SameTeam[v,v2] <= Assign[v,n] - Assign[v2,n] + 1) # Define SameTeam
 @constraint(Prob, [n=1:N,v=1:V,v2=1:V], SameTeam[v,v2] >= Assign[v,n] - Assign[v2,n] - 1) # Define SameTeam
 
-@constraint(Prob, [n=1:N], sum(Assign[v,n]*AllVectors[v,"Male"]     for v=1:V) <= VectorsPerTrip[n]*AvgMaleRatio     + 1 + MoreMales[n])   # Define MoreMales
-@constraint(Prob, [n=1:N], sum(Assign[v,n]*(1-AllVectors[v,"Male"]) for v=1:V) <= VectorsPerTrip[n]*(1-AvgMaleRatio) + 1 + MoreFemales[n]) # Define MoreFemales
+# male vectors + male kabs <= AvgMaleRatio*(vectors+kabs) + AbsGender
+@constraint(Prob, [n=1:N], sum(Assign[v,n]*AllVectors[v,"Male"] for v=1:V) + sum(KABSdata[occursin.(kabs,KABSdata."KABS name"),"Male"][1] for kabs=eachsplit(Rustripsdata[n,"KABS"]," og "))   <=  AvgMaleRatio  * (VectorsPerTrip[n] + length(collect(eachsplit(Rustripsdata[n,"KABS"], " og "))))    + AbsGender[n])   # Define AbsGender
 
 @constraint(Prob, [n=1:N], sum(Assign[v,n]*AllVectors[v,"Access to Sowing Machine"] for v=1:V) >= 2 - FewerSew[n]) # Define FewerSew
 @constraint(Prob, [n=1:N], sum(Assign[v,n]*AllVectors[v,"Lives on Campus"] for v=1:V) >= 1 - NoCampus[n])          # Define NoCampus
@@ -65,7 +64,7 @@ end
 # Distribute evenly the amount of drivers
 DistributeEvenly("Smoker", AbsSmokers)
 DistributeEvenly("Has been vector before", AbsSndTime)
-DistributeEvenly(">20 og kørekort i min. 1 år", AbsDrivers)
+DistributeEvenly(">21 og kørekort i min. 1 år", AbsDrivers)
 
 # Distribute evenly the average power level
 AvgPow = sum(AllVectors[:,"Power level"]) / length(AllVectors[:,"Power level"])
@@ -107,7 +106,6 @@ AvgPow = sum(AllVectors[:,"Power level"]) / length(AllVectors[:,"Power level"])
 #                                     AllVectors[v,"Wants Medium Tri"] * (8  <= Rustripsdata[n,"Vectors amount"] <= 10 ? 1 : 0) + 
 #                                     AllVectors[v,"Wants Large Trip"] * (11 <= Rustripsdata[n,"Vectors amount"]       ? 1 : 0))  for v=1:V) <=
 #                                     VectorsPerTrip[n] - VectorUnSatisfiedwithTripSize[n]    ) # Define VectorUnSatisfiedwithTripSize
-
 @constraint(Prob, [n=1:N,v=1:V], Assign[v,n] <= 
                                     AllVectors[v,"Wants Small Trip"] * (      Rustripsdata[n,"Vectors amount"] <= 7  ? 1 : 0) + 
                                     AllVectors[v,"Wants Medium Tri"] * (8 <=  Rustripsdata[n,"Vectors amount"] <= 10 ? 1 : 0) + 
@@ -115,11 +113,13 @@ AvgPow = sum(AllVectors[:,"Power level"]) / length(AllVectors[:,"Power level"])
                                     VectorUnSatisfiedwithTripSize[v,n]    ) # Define VectorUnSatisfiedwithTripSize
 
 # Distribute GE vectors evenly on mix trips
-MixtripIndices = [1,2,3,4]
-GEvectors = size(subset(AllVectors, "Study line team" => a-> a .== "General Engineering"))[1]
-@constraint(Prob, [n=MixtripIndices],   sum(Assign[v,n]*(AllVectors[v,"Study line team"]=="General Engineering" ? 1 : 0) for v=1:V) - GEvectors/length(MixtripIndices)  <= AbsGEDeviation[n])
-@constraint(Prob, [n=MixtripIndices], -(sum(Assign[v,n]*(AllVectors[v,"Study line team"]=="General Engineering" ? 1 : 0) for v=1:V) - GEvectors/length(MixtripIndices)) <= AbsGEDeviation[n])
+@constraint(Prob, [n=1:N; Rustripsdata[n,"Trip"] in Mixtrips],   sum(Assign[v,n]*(AllVectors[v,"Study line team"]=="General Engineering" ? 1 : 0) for v=1:V) - GEvectors/nMixtrips  <= AbsGEDeviation[n])
+@constraint(Prob, [n=1:N; Rustripsdata[n,"Trip"] in Mixtrips], -(sum(Assign[v,n]*(AllVectors[v,"Study line team"]=="General Engineering" ? 1 : 0) for v=1:V) - GEvectors/nMixtrips) <= AbsGEDeviation[n])
 
+# Vectors on the Flip-trip must speak Danish
+if false
+    @constraint(Prob, sum(Assign[v,FliptripIndex]*AllVectors[v,"Speaks Danish"] for v=1:V) == VectorsPerTrip[FliptripIndex])
+end
 # A vector cannot be on a trip with their Study line KABS
 @constraint(Prob, [n=1:N], sum(Assign[v,n] for v=1:V if (AllVectors[v,"Study line team"] in ForbiddenStudylines[n] && !(AllVectors[v,"Study line team"] in StudyLinesWithMoreVectorsOnSameTrip))) == 0)
 
@@ -131,8 +131,7 @@ GEvectors = size(subset(AllVectors, "Study line team" => a-> a .== "General Engi
                         + (AllVectors[v,Rustripsdata[n,"Trip"]] == "Ok" ? 0 : 0)
                         + (AllVectors[v,Rustripsdata[n,"Trip"]] == "Very yes" ? 20 : 0)
             ) for v=1:V,n=1:N)
-    - 50*sum(MoreMales[n] for n=1:N)
-    - 50*sum(MoreFemales[n] for n=1:N)
+    - 50*sum(AbsGender[n]*2 for n=1:N)
     - 50*sum(AbsSndTime[n] for n=1:N)
     - 30*sum(AbsDrivers[n] for n=1:N)
     - 30*sum(FewerSew[n] for n=1:N)

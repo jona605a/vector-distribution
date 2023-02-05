@@ -1,7 +1,7 @@
 using CSV
 using DataFrames
 
-StudylineKABS = subset(CSV.read("Data/KABSdata.csv", DataFrame) , All().=>ByRow(!ismissing))
+KABSdata = subset(CSV.read("Data/KABSdata.csv", DataFrame) , All().=>ByRow(!ismissing))
 Rustripsdata = subset(CSV.read("Data/Rustripcabins2023.csv", DataFrame), All().=>ByRow(!ismissing))
 
 N = size(Rustripsdata,1)
@@ -9,8 +9,14 @@ N = size(Rustripsdata,1)
 VectorsPerTrip  = Rustripsdata[:,"Vectors amount"]
 
 TypesOfRustrips = unique(Rustripsdata[:,"Trip"])
+FliptripIndex = 17 # Has to speak Danish
 
 
+
+StudyLinesWithMoreVectorsOnSameTrip = ["General Engineering"]
+GEvectors = size(subset(AllVectors, "Study line team" => a-> a .== "General Engineering"))[1]
+Mixtrips = ["Mixtrip", "4-day Flip-trip", "Sober Mixtrip"]
+nMixtrips = 4
 
 
 
@@ -26,34 +32,37 @@ Vbygdes = ReadHiredVectors("Data/Primary Distribution.xlsx - C. Byggeteknologi.c
 
 # show(names(AllVectors)) # gives the following:
 # ["Want to hire", "Name", "Has been vector before", "Wants Small Trip", "Wants Medium Tri", "Wants Large Trip", 
-# ">20 og kørekort i min. 1 år", "Ok with English Trips", "Prefer English Trips", "Ok with Sober English Trips", 
-# "Prefer Sober English Trips", "Ok with 1-Day Trips", "Prefer 1-Day Trips", "Ok with Weekend Trips", "Prefer Weekend Trips", 
-# "Ok with Sober Weekend Trip", "Prefer Sober Weekend Trip", "Ok with Campus Trip", "Prefer Campus Trip", "Smoker", "Lives on Campus", 
-# "Sex", "Access to Sowing Machine", "Power level", "Study line team", "Lyngby/Ballerup"]
+# ">21 og kørekort i min. 1 år", 
+# "4-day Danish", "Weekend trip", "Campus trip", "3-day Sober", "Sober Mixtrip", "Mixtrip", "4-day Flip-trip", "One day Trips (Mixtrip)", 
+# "Smoker", "Lives on Campus", "Ballerup vector", "Male", "Speaks Danish", "Access to Sowing Machine", "Power level", "Study line team"]
 
 AllVectors = vcat(Vbyggetek,Vbygdes)
-# AllVectors = transform(AllVectors, :"Sex" => ByRow(x -> x=="M") => :"Male")
 
 V = size(AllVectors, 1)
+K = size(KABSdata,1)
 
-AvgMaleRatio = size(subset(AllVectors, :"Male" => a->a))[1] / V
-AvgSndTime = size(subset(AllVectors, :"Has been vector before" => a->a))[1] / V
-AvgDrivers = size(subset(AllVectors, :">20 og kørekort i min. 1 år" => a->a))[1] / V
-AvgSmokers = size(subset(AllVectors, :"Smoker" => a->a))[1] / V
+Malevectors = size(subset(AllVectors, "Male" => a->a))[1]
+MaleKABS = size(subset(KABSdata, "Male" => a->a.==1))[1]
+AvgMaleRatio = (MaleKABS + Malevectors) / (V+K)
 
-StudyLinesWithMoreVectorsOnSameTrip = ["General Engineering"]
+
+AvgSndTime = size(subset(AllVectors, "Has been vector before" => a->a))[1] / V
+AvgDrivers = size(subset(AllVectors, ">21 og kørekort i min. 1 år" => a->a))[1] / V
+AvgSmokers = size(subset(AllVectors, "Smoker" => a->a))[1] / V
 
 
 ForbiddenStudylines = []
 for n=1:N
-    kabsstr = Rustripsdata[n,"KABS"]
-    kabslst = collect(eachsplit(kabsstr," og "))
     push!(ForbiddenStudylines, [])
-    for kabs=kabslst
+    kabsstr = Rustripsdata[n,"KABS"]
+    for kabs=eachsplit(kabsstr," og ")
         # println(kabs)
-        studylines = StudylineKABS[occursin.(kabs,StudylineKABS."KABS name"),"Study line"]
+        studylines = KABSdata[occursin.(kabs,KABSdata."KABS name"),"Study line"]
+        # Ugly julia code for looking up in the dataframe
         for sl = studylines
-            push!(ForbiddenStudylines[n], sl)
+            for seperate_sl = collect(eachsplit(sl,","))
+                push!(ForbiddenStudylines[n], seperate_sl)
+            end
         end
     end
 end
