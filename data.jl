@@ -1,17 +1,16 @@
 using CSV
 using DataFrames
 
-StudylineKABS = CSV.read("Data/KABSdata.csv", DataFrame)
-Rustripsdata = CSV.read("Data/Rustripsdata.csv", DataFrame)
+StudylineKABS = subset(CSV.read("Data/KABSdata.csv", DataFrame) , All().=>ByRow(!ismissing))
+Rustripsdata = subset(CSV.read("Data/Rustripcabins2023.csv", DataFrame), All().=>ByRow(!ismissing))
 
 N = size(Rustripsdata,1)
 
-# RustripName     = Rustripsdata[:,1]
-# RustripLanguage = Rustripsdata[:,2]
-# RustripWeekend  = Rustripsdata[:,3]
-# RustripAlcohol  = Rustripsdata[:,4]
-# VectorsPerTrip  = Rustripsdata[:,5]
-# KABSforTrip     = Rustripsdata[:,6]
+VectorsPerTrip  = Rustripsdata[:,"Vectors amount"]
+
+TypesOfRustrips = unique(Rustripsdata[:,"Trip"])
+
+
 
 
 
@@ -23,7 +22,7 @@ end
 
 
 Vbyggetek = ReadHiredVectors("Data/Primary Distribution.xlsx - C. Byggeteknologi.csv")
-Vbygdes = ReadHiredVectors("Data/Primary Distribution.xlsx - C. Bygningsdesing.csv")
+Vbygdes = ReadHiredVectors("Data/Primary Distribution.xlsx - C. Byggeteknologi.csv")
 
 # show(names(AllVectors)) # gives the following:
 # ["Want to hire", "Name", "Has been vector before", "Wants Small Trip", "Wants Medium Tri", "Wants Large Trip", 
@@ -33,12 +32,7 @@ Vbygdes = ReadHiredVectors("Data/Primary Distribution.xlsx - C. Bygningsdesing.c
 # "Sex", "Access to Sowing Machine", "Power level", "Study line team", "Lyngby/Ballerup"]
 
 AllVectors = vcat(Vbyggetek,Vbygdes)
-AllVectors = transform(AllVectors, :"Sex" => ByRow(x -> x=="M") => :"Male")
-AllVectors = transform(AllVectors, :"Lyngby/Ballerup" => ByRow(x -> x=="B") => :"Ballerup")
-
-# AllVectors = transform(AllVectors, :"Study line team" => ByRow(x -> x) => :"ForbiddenTrips")
-
-# collect(eachsplit(StudylineKABS[findfirst(y->y=="D. Produktion", StudylineKABS[:,1]) , 2],","))
+# AllVectors = transform(AllVectors, :"Sex" => ByRow(x -> x=="M") => :"Male")
 
 V = size(AllVectors, 1)
 
@@ -48,4 +42,20 @@ AvgDrivers = size(subset(AllVectors, :">20 og kørekort i min. 1 år" => a->a))[
 AvgSmokers = size(subset(AllVectors, :"Smoker" => a->a))[1] / V
 
 StudyLinesWithMoreVectorsOnSameTrip = ["General Engineering"]
+
+
+ForbiddenStudylines = []
+for n=1:N
+    kabsstr = Rustripsdata[n,"KABS"]
+    kabslst = collect(eachsplit(kabsstr," og "))
+    push!(ForbiddenStudylines, [])
+    for kabs=kabslst
+        # println(kabs)
+        studylines = StudylineKABS[occursin.(kabs,StudylineKABS."KABS name"),"Study line"]
+        for sl = studylines
+            push!(ForbiddenStudylines[n], sl)
+        end
+    end
+end
+ForbiddenStudylines
 
