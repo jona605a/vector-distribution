@@ -34,11 +34,3 @@ The preferences are: 1) Very yes 2) Ok 3) No. In Danish: 1) Meget gerne 2) Ok 3)
 Vectors put on a trip they really want gets a positive score, an "ok" trip is neutral and vectors on a trip they don't want is a large negative.
 The same logic is true for the sizes of trips, excpet then the answers are Yes/No for each size. The team sizes are Small (6-7 vectors), Medium (8-10 vectors) and Large (11+ vectors) team.
 
-
-
-
-Questions for KABS23
-
-Should the KABS be taken into account when counting vectors with drivers' license? An option could be that a KABS can say "Yes, could me as a driver". This would result in that trip gaining one vector-driver fewer (on average).
-
-

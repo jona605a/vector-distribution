@@ -2,7 +2,6 @@
 #  assignment
 using JuMP
 using HiGHS
-Prob = Model(HiGHS.Optimizer)
 #************************************************************************
 println("Defining variables...")
 #************************************************************************
@@ -19,11 +18,14 @@ end
 
 #************************************************************************
 println("Defining model...")
+Prob = Model(HiGHS.Optimizer)
+set_time_limit_sec(Prob, 600.0)
 #************************************************************************
 # Model
 
 @variable(Prob, Assign[1:V,1:N], Bin)
-@variable(Prob, SameTeam[1:V,1:V], Bin)
+@variable(Prob, HasBuddyTeam[1:N,1:length(BuddyTeams)], Bin)
+# @variable(Prob, SameTeam[1:V,1:V], Bin)
 
 # Slack variables (should be penalized)
 @variable(Prob, AbsGender[1:N]>=0)
@@ -38,14 +40,15 @@ println("Defining model...")
 
 # Helper variables
 @variable(Prob, HasBallerupVector[1:N], Bin)
+@variable(Prob, HasLyngbyVector[1:N], Bin)
 @variable(Prob, HasFemale[1:N], Bin)
 @variable(Prob, HasMale[1:N], Bin)
 
-@constraint(Prob, [n=1:N], sum(Assign[v,n] for v=1:V) <= VectorsPerTrip[n]) # Each trip gets the vectors it needs
+@constraint(Prob, [n=1:N], sum(Assign[v,n] for v=1:V) == VectorsPerTrip[n]) # Each trip gets the vectors it needs
 @constraint(Prob, [v=1:V], sum(Assign[v,n] for n=1:N) == 1)                 # Each vector is assigned once
 
-@constraint(Prob, [n=1:N,v=1:V,v2=1:V], SameTeam[v,v2] <= Assign[v,n] - Assign[v2,n] + 1) # Define SameTeam
-@constraint(Prob, [n=1:N,v=1:V,v2=1:V], SameTeam[v,v2] >= Assign[v,n] - Assign[v2,n] - 1) # Define SameTeam
+# @constraint(Prob, [n=1:N,v=1:V,v2=1:V], SameTeam[v,v2] <= Assign[v,n] - Assign[v2,n] + 1) # Define SameTeam
+# @constraint(Prob, [n=1:N,v=1:V,v2=1:V], SameTeam[v,v2] >= Assign[v,n] - Assign[v2,n] - 1) # Define SameTeam
 
 # male vectors + male kabs <= AvgMaleRatio*(vectors+kabs) + AbsGender
 @constraint(Prob, [n=1:N], sum(Assign[v,n]*AllVectors[v,"Male"] for v=1:V) + sum(KABSdata[occursin.(kabs,KABSdata."KABS name"),"Male"][1] for kabs=eachsplit(Rustripsdata[n,"KABS"]," og "))   <=  AvgMaleRatio  * (VectorsPerTrip[n] + length(collect(eachsplit(Rustripsdata[n,"KABS"], " og "))))    + AbsGender[n])   # Define AbsGender
@@ -55,8 +58,8 @@ println("Defining model...")
 
 function DistributeEvenly(columnname, variablename)
     AvgValue = size(subset(AllVectors, columnname => a->a))[1] / V
-    @constraint(Prob, [n=1:N],   sum(Assign[v,n]*AllVectors[v,columnname] for v=1:V) - AvgValue  <= variablename[n])
-    @constraint(Prob, [n=1:N], -(sum(Assign[v,n]*AllVectors[v,columnname] for v=1:V) - AvgValue) <= variablename[n])
+    @constraint(Prob, [n=1:N],   sum(Assign[v,n]*AllVectors[v,columnname] for v=1:V) - AvgValue*VectorsPerTrip[n]  <= variablename[n])
+    @constraint(Prob, [n=1:N], -(sum(Assign[v,n]*AllVectors[v,columnname] for v=1:V) - AvgValue*VectorsPerTrip[n]) <= variablename[n])
 end
 
 # Distribute evenly the amount of 2nd time vectors
@@ -75,6 +78,10 @@ AvgPow = sum(AllVectors[:,"Power level"]) / length(AllVectors[:,"Power level"])
 @constraint(Prob, [n=1:N], sum(Assign[v,n]*AllVectors[v,"Ballerup vector"] for v=1:V) <= HasBallerupVector[n] * VectorsPerTrip[n])
 @constraint(Prob, [n=1:N], sum(Assign[v,n]*AllVectors[v,"Ballerup vector"] for v=1:V) >= HasBallerupVector[n] * 2)
 
+# If there are any Lyngby vectors, there has to be at least 2
+@constraint(Prob, [n=1:N], sum(Assign[v,n]*(AllVectors[v,"Ballerup vector"] ? 0 : 1) for v=1:V) <= HasLyngbyVector[n] * VectorsPerTrip[n])
+@constraint(Prob, [n=1:N], sum(Assign[v,n]*(AllVectors[v,"Ballerup vector"] ? 0 : 1) for v=1:V) >= HasLyngbyVector[n] * 2)
+
 # If there are any female vectors, there has to be at least 2
 @constraint(Prob, [n=1:N], sum(Assign[v,n]*(1-AllVectors[v,"Male"]) for v=1:V) <= HasFemale[n] * VectorsPerTrip[n])
 @constraint(Prob, [n=1:N], sum(Assign[v,n]*(1-AllVectors[v,"Male"]) for v=1:V) >= HasFemale[n] * 2)
@@ -82,20 +89,6 @@ AvgPow = sum(AllVectors[:,"Power level"]) / length(AllVectors[:,"Power level"])
 # If there are any male vectors, there has to be at least 2
 @constraint(Prob, [n=1:N], sum(Assign[v,n]*AllVectors[v,"Male"] for v=1:V) <= HasMale[n] * VectorsPerTrip[n])
 @constraint(Prob, [n=1:N], sum(Assign[v,n]*AllVectors[v,"Male"] for v=1:V) >= HasMale[n] * 2)
-
-# show(names(Vbygdes)) # gives the following:
-# ["Want to hire", "Name", "Has been vector before", "Wants Small Trip", "Wants Medium Tri", "Wants Large Trip", 
-# ">20 og kørekort i min. 1 år", "Ok with English Trips", "Prefer English Trips", "Ok with Sober English Trips", 
-# "Prefer Sober English Trips", "Ok with 1-Day Trips", "Prefer 1-Day Trips", "Ok with Weekend Trips", "Prefer Weekend Trips", 
-# "Ok with Sober Weekend Trip", "Prefer Sober Weekend Trip", "Ok with Campus Trip", "Prefer Campus Trip", "Smoker", "Lives on Campus", 
-# "Sex", "Access to Sowing Machine", "Power level", "Study line team", "Lyngby/Ballerup"]
-
-# ["Ok with English Trips", "Prefer English Trips", 
-# "Ok with Sober English Trips", "Prefer Sober English Trips", 
-# "Ok with 1-Day Trips", "Prefer 1-Day Trips", 
-# "Ok with Weekend Trips", "Prefer Weekend Trips", 
-# "Ok with Sober Weekend Trip", "Prefer Sober Weekend Trip", 
-# "Ok with Campus Trip", "Prefer Campus Trip"]
 
 # Small trip:  6-7 vectors
 # Medium trip: 8-10 vectors
@@ -105,24 +98,26 @@ AvgPow = sum(AllVectors[:,"Power level"]) / length(AllVectors[:,"Power level"])
 #                                     AllVectors[v,"Wants Small Trip"] * (      Rustripsdata[n,"Vectors amount"] <= 7  ? 1 : 0) + 
 #                                     AllVectors[v,"Wants Medium Tri"] * (8  <= Rustripsdata[n,"Vectors amount"] <= 10 ? 1 : 0) + 
 #                                     AllVectors[v,"Wants Large Trip"] * (11 <= Rustripsdata[n,"Vectors amount"]       ? 1 : 0))  for v=1:V) <=
-#                                     VectorsPerTrip[n] - VectorUnSatisfiedwithTripSize[n]    ) # Define VectorUnSatisfiedwithTripSize
+#                                     VectorsPerTrip[n] - VectorUnSatisfiedwithTripSize[n]    ) # Define VectorUnSatisfiedwithTripSize[n]
 @constraint(Prob, [n=1:N,v=1:V], Assign[v,n] <= 
                                     AllVectors[v,"Wants Small Trip"] * (      Rustripsdata[n,"Vectors amount"] <= 7  ? 1 : 0) + 
                                     AllVectors[v,"Wants Medium Tri"] * (8 <=  Rustripsdata[n,"Vectors amount"] <= 10 ? 1 : 0) + 
                                     AllVectors[v,"Wants Large Trip"] * (11 <= Rustripsdata[n,"Vectors amount"]       ? 1 : 0  ) +
-                                    VectorUnSatisfiedwithTripSize[v,n]    ) # Define VectorUnSatisfiedwithTripSize
+                                    VectorUnSatisfiedwithTripSize[v,n]    ) # Define VectorUnSatisfiedwithTripSize[v,n]
 
 # Distribute GE vectors evenly on mix trips
 @constraint(Prob, [n=1:N; Rustripsdata[n,"Trip"] in Mixtrips],   sum(Assign[v,n]*(AllVectors[v,"Study line team"]=="General Engineering" ? 1 : 0) for v=1:V) - GEvectors/nMixtrips  <= AbsGEDeviation[n])
 @constraint(Prob, [n=1:N; Rustripsdata[n,"Trip"] in Mixtrips], -(sum(Assign[v,n]*(AllVectors[v,"Study line team"]=="General Engineering" ? 1 : 0) for v=1:V) - GEvectors/nMixtrips) <= AbsGEDeviation[n])
 
 # Vectors on the Flip-trip must speak Danish
-if false
-    @constraint(Prob, sum(Assign[v,FliptripIndex]*AllVectors[v,"Speaks Danish"] for v=1:V) == VectorsPerTrip[FliptripIndex])
-end
+@constraint(Prob, sum(Assign[v,FliptripIndex]*AllVectors[v,"Speaks Danish"] for v=1:V) == VectorsPerTrip[FliptripIndex])
+
 # A vector cannot be on a trip with their Study line KABS
 @constraint(Prob, [n=1:N], sum(Assign[v,n] for v=1:V if (AllVectors[v,"Study line team"] in ForbiddenStudylines[n] && !(AllVectors[v,"Study line team"] in StudyLinesWithMoreVectorsOnSameTrip))) == 0)
 
+# Buddy teams (if odd number of vectors, prefer 3 on one team than a lone 1 on another team)
+@constraint(Prob, [n=1:N, k=1:length(BuddyTeams)], sum(Assign[v,n]*(AllVectors[v,"Study line team"]==sl ? 1 : 0) for v=1:V,sl=BuddyTeams[k]) >= HasBuddyTeam[n,k]*2)
+@constraint(Prob, [n=1:N, k=1:length(BuddyTeams)], sum(Assign[v,n]*(AllVectors[v,"Study line team"]==sl ? 1 : 0) for v=1:V,sl=BuddyTeams[k]) <= HasBuddyTeam[n,k]*3)
 
 
 @objective(Prob,Max,
@@ -138,6 +133,7 @@ end
     - 30*sum(NoCampus[n] for n=1:N)
     - 10*sum(AbsSmokers[n] for n=1:N)
     - 10*sum(AbsGEDeviation[n] for n=1:N)
+    + 1000*sum(HasBuddyTeam[n,k] for n=1:N,k=1:length(BuddyTeams)) # Maximize amount of buddy teams
 )
 
 
@@ -150,14 +146,29 @@ println("Termination status: $(termination_status(Prob))")
 #************************************************************************
 
 #************************************************************************
-if termination_status(Prob) == MOI.OPTIMAL
-    println("\nOptimal objective value: $(objective_value(Prob))")
-    for n=1:N
-        # println("AbsDrivers[$(n)] = $(value(AbsDrivers[n]))")
+println("No optimal solution available")
+println("\nFinal objective value: $(objective_value(Prob))")
+println("\n####### Printing each trip: #######\n")
+for n=1:N
+    println("  KABS: $(Rustripsdata[n,"KABS"])")
+    for v=1:V
+        if value(Assign[v,n]) > 0.5
+            println("    Vector nr $(v): $(AllVectors[v,"Name"])")
+        end
     end
-else
-    println("No optimal solution available")
 end
 #************************************************************************
 
 
+println(round(sum(value(VectorUnSatisfiedwithTripSize[v,n]) for v=1:V,n=1:N),digits=2), " vectors unsatisfied with trip size")
+println(round(sum(value(Assign[v,n])* (  (AllVectors[v,Rustripsdata[n,"Trip"]] == "Very yes" ? 1 : 0)) for v=1:V,n=1:N),digits=2), " vectors on a trip they preferred")
+println(round(sum(value(Assign[v,n])* (  (AllVectors[v,Rustripsdata[n,"Trip"]] == "Ok" ? 1 : 0)) for v=1:V,n=1:N),digits=2), " vectors on a trip they were ok with")
+println(round(sum(value(Assign[v,n])* (  (AllVectors[v,Rustripsdata[n,"Trip"]] == "No" ? 1 : 0)) for v=1:V,n=1:N),digits=2), " vectors on a trip they didn't want")
+println(round(sum(value(AbsGender[n])*2 for n=1:N),digits=2), " gender deviation")
+println(round(sum(value(AbsSndTime[n]) for n=1:N),digits=2), " second-time vector deviation")
+println(round(sum(value(AbsDrivers[n]) for n=1:N),digits=2), " drivers deviation")
+println(round(sum(value(FewerSew[n]) for n=1:N),digits=2), " crossteams with no sewing machines")
+println(round(sum(value(NoCampus[n]) for n=1:N),digits=2), " crossteams with noone living on campus")
+println(round(sum(value(AbsSmokers[n]) for n=1:N),digits=2), " smoker deviation")
+println(round(sum(value(AbsGEDeviation[n]) for n=1:N),digits=2), " GE deviation (on mix trips)")
+println(round(sum(value(HasBuddyTeam[n,k]) for n=1:N,k=1:length(BuddyTeams)),digits=2), " total buddy teams")
