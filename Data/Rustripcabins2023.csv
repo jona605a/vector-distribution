@@ -1,5 +1,5 @@
 ﻿Location,Cabin,Amount(max),Vectors amount,Trip,KABS
-Sjælland,OneDay,75,8,One day Trips (Mixtrip),Liam
+Sjælland,OneDay,75x3,8,One day Trips (Mixtrip),Liam
 Sjælland,Campus tur 2,90,8,Campus trip,Oliver 
 Sjælland,Colleruphus 1 (Ædru) OBS! Fra søndag kl 16:00,60,7,3-day Sober,Magnus
 Sjælland,Colleruphus 2 (Ædru) ,60,7,Sober Mixtrip,Helene
@@ -7,27 +7,23 @@ Sjælland,Farmen 1 ,50,7,4-day Danish,Marilouise
 Sjælland,Farmen 2 ,50,7,4-day Danish,Josefine
 Sjælland,Ingeborg 1,70,7,4-day Danish,Thor
 Sjælland,Ingeborg 2,70,7,4-day Danish,Laurits
-Sjælland,Klinteborg 1,120,15,4-day Danish,Eske og Jonas
-Sjælland,Klinteborg 2,120,15,4-day Danish,Johan Rosenkrands og Sarah
+Sjælland,Klinteborg 1,120,16,4-day Danish,Eske og Jonas
+Sjælland,Klinteborg 2,120,16,4-day Danish,Johan og Sarah
 Sjælland,Klintehytten 2,75,10,4-day Danish,Theis
 Sjælland,Kråruplund 1,48,7,Weekend trip,Sophie
 Sjælland,Kråruplund 2,48,7,4-day Danish,Frederik
-Sjælland,Lerbjergcenteret 2,50,7,4-day Danish,Anna Hjort
+Sjælland,Lerbjergcenteret 2,50,7,4-day Danish,Anna H
 Sjælland,Lyngborgen 1,54,7,4-day Danish,Mads
-Sjælland,Lyngborgen 2,54,7,4-day Danish,Niels Boelt
+Sjælland,Lyngborgen 2,54,7,4-day Danish,Niels
 Sjælland,Sommerlejren 2,64,9,4-day Flip-trip,Marika
 Sjælland,Strandlyst 2,50,7,Mixtrip,Anders
 Sjælland,Tolv ege 1,48,7,Weekend trip,Emilie
-Sjælland,Tolv ege 2,48,7,4-day Danish,Anna Weilsby
+Sjælland,Tolv ege 2,48,7,4-day Danish,Anna W
 Fyn,Egebjerghytten 1,50,7,4-day Danish,Joakim
 Fyn,Egebjerghytten 2,50,7,4-day Danish,Malou
 Fyn,Fønsborg 1,50,7,4-day Danish,Thomas 
 Fyn,Fønsborg 2,50,7,4-day Danish,Ea
 Fyn,Højbjerg 1,70,9,4-day Danish,Hannah
 Fyn,Højbjerg 2,70,9,Mixtrip,Lachlan
-Fyn,Skovbrynet 1,100,12,4-day Danish,Tobias og Gustav
-Fyn,Skovbrynet 2,100,12,4-day Danish,August og Benedicte
-,,,,,
-,,,,,
-,,,,,
-,,,,,
+Fyn,Skovbrynet 1,100,13,4-day Danish,Tobias og Gustav
+Fyn,Skovbrynet 2,100,13,4-day Danish,August og Benedicte
