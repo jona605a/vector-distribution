@@ -15,8 +15,8 @@ FliptripIndex = 17 # Has to speak Danish
 
 
 StudyLinesWithMoreVectorsOnSameTrip = ["General Engineering"]
-Mixtrips = ["Mixtrip", "4-day Flip-trip", "Sober Mixtrip"]
-nMixtrips = 4
+Mixtrips = ["Mixtrip", "4-day Flip-trip", "Sober Mixtrip", "One day Trips (Mixtrip)"]
+nMixtrips = 5
 
 
 
@@ -29,7 +29,7 @@ primdist = XLSX.readxlsx("Data/Primary Distribution.xlsx")
 testing = true
 
 function ReadHiredVectors(studyline)
-    println("Reading sheet: ",studyline)
+    # println("Reading sheet: ",studyline)
     vectorsheet = DataFrame(XLSX.gettable(primdist[studyline]))
     #vectorsheet = DataFrame(XLSX.readtable("Data/Primary Distribution.xlsx", studyline))
     vectorsheet = subset(vectorsheet, All() .=> ByRow(!ismissing), :"Want to hire" => a->a, skipmissing=true)
@@ -132,6 +132,6 @@ for n=1:N
         end
     end
 end
-ForbiddenStudylines
+# ForbiddenStudylines
 
 
