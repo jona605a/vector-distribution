@@ -159,11 +159,10 @@ for n=1:N
 end
 #************************************************************************
 
-
-println(round(sum(value(VectorUnSatisfiedwithTripSize[v,n]) for v=1:V,n=1:N),digits=2), " vectors unsatisfied with trip size")
 println(round(sum(value(Assign[v,n])* (  (AllVectors[v,Rustripsdata[n,"Trip"]] == "Very yes" ? 1 : 0)) for v=1:V,n=1:N),digits=2), " vectors on a trip they preferred")
 println(round(sum(value(Assign[v,n])* (  (AllVectors[v,Rustripsdata[n,"Trip"]] == "Ok" ? 1 : 0)) for v=1:V,n=1:N),digits=2), " vectors on a trip they were ok with")
 println(round(sum(value(Assign[v,n])* (  (AllVectors[v,Rustripsdata[n,"Trip"]] == "No" ? 1 : 0)) for v=1:V,n=1:N),digits=2), " vectors on a trip they didn't want")
+println(round(sum(value(VectorUnSatisfiedwithTripSize[v,n]) for v=1:V,n=1:N),digits=2), " vectors unsatisfied with trip size")
 println(round(sum(value(AbsGender[n])*2 for n=1:N),digits=2), " gender deviation")
 println(round(sum(value(AbsSndTime[n]) for n=1:N),digits=2), " second-time vector deviation")
 println(round(sum(value(AbsDrivers[n]) for n=1:N),digits=2), " drivers deviation")
@@ -172,3 +171,26 @@ println(round(sum(value(NoCampus[n]) for n=1:N),digits=2), " crossteams with noo
 println(round(sum(value(AbsSmokers[n]) for n=1:N),digits=2), " smoker deviation")
 println(round(sum(value(AbsGEDeviation[n]) for n=1:N),digits=2), " GE deviation (on mix trips)")
 println(round(sum(value(HasBuddyTeam[n,k]) for n=1:N,k=1:length(BuddyTeams)),digits=2), " total buddy teams")
+
+
+XLSX.openxlsx("vector-output.xlsx", mode="w") do xf
+    sheet = xf[1]
+    XLSX.rename!(sheet, "new_sheet")
+
+    sheet["A1"] = collect(["Vector" "Study line team" "Has been vector before" "Wants the trip type"])
+
+    curRow = 2
+    for n=1:N
+        sheet[curRow, 1] = [Rustripsdata[n,"KABS"] Rustripsdata[n,"Cabin"] Rustripsdata[n,"Trip"]]
+        curRow += 1
+        for v=1:V
+            if value(Assign[v,n]) > 0.5
+                # println([AllVectors[v,"Name"] AllVectors[v,"Study line team"] AllVectors[v,"Has been vector before"] AllVectors[v,Rustripsdata[n,"Trip"]]])
+                sheet[curRow,1] = [AllVectors[v,"Name"] AllVectors[v,"Study line team"] AllVectors[v,"Has been vector before"] AllVectors[v,Rustripsdata[n,"Trip"]]]
+                curRow += 1
+            end
+        end
+        curRow += 1
+    end
+end
+

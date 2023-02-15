@@ -29,7 +29,7 @@ primdist = XLSX.readxlsx("Data/Primary Distribution.xlsx")
 testing = true
 
 function ReadHiredVectors(studyline)
-    println(studyline)
+    println("Reading sheet: ",studyline)
     vectorsheet = DataFrame(XLSX.gettable(primdist[studyline]))
     #vectorsheet = DataFrame(XLSX.readtable("Data/Primary Distribution.xlsx", studyline))
     vectorsheet = subset(vectorsheet, All() .=> ByRow(!ismissing), :"Want to hire" => a->a, skipmissing=true)
@@ -54,6 +54,7 @@ end
 
 #map(x->(typeof(x)==String ? parse(Float64,replace(x,","=>".")) : x), AllVectors[:,"Power level"])
 
+# old:
 # ["Want to hire", "Name", "Has been vector before", "Wants Small Trip", "Wants Medium Tri", "Wants Large Trip", 
 # ">20 og kørekort i min. 1 år", 
 # "Ok with English Trips", "Prefer English Trips", => Mixtrip
@@ -64,6 +65,7 @@ end
 # "Ok with Campus Trip", "Prefer Campus Trip", Campus trip
 # "Smoker", "Lives on Campus", "Sex", "Access to Sowing Machine", "Power level", "Study line team", "Lyngby/Ballerup"]
 
+# new:
 # show(names(AllVectors)) # gives the following:
 # ["Want to hire", "Name", "Has been vector before", "Wants Small Trip", "Wants Medium Tri", "Wants Large Trip", 
 # ">21 og kørekort i min. 1 år", 
@@ -88,7 +90,7 @@ end
 V = size(AllVectors, 1)
 # Done reading
 
-GEvectors = size(subset(AllVectors, "Study line team" => a-> a .== "General Engineering"))[1]
+GEvectors = size(subset(AllVectors, "Study line team" => a-> a .== "C. General Engineering"))[1]
 Malevectors = size(subset(AllVectors, "Male" => a->a))[1]
 MaleKABS = size(subset(KABSdata, "Male" => a->a.==1))[1]
 AvgMaleRatio = (MaleKABS + Malevectors) / (V+K)
@@ -106,6 +108,12 @@ StudylineteamsWithMeetingsTogether = [["C. Cyberteknologi","C. Elektroteknologi"
                                       ["D. Softwareteknologi","D. IT og Økonomi"], # d. soft + d.itø
                                       ["C. Bygningsdesign","D. Bygningsdesign"], # bygdes
                                       ]
+
+BuddyTeams = [["C. Fysik og Nanoteknologi","C. Geofysik og Rumteknologi"], # NSA
+              ["C. Softwareteknologi","C. Matematik og Teknologi","C. Kunstig Intelligens og Data"], # SMKID
+              ["D. Process og Innovation","D. Produktion","D. Transport og Mobilitet"], # PROMO
+              ["C. Bygningsdesign","D. Bygningsdesign"], # bygdes
+              ]
 
 ForbiddenStudylines = Vector{String}[]
 for n=1:N
@@ -126,9 +134,4 @@ for n=1:N
 end
 ForbiddenStudylines
 
-BuddyTeams = [["C. Fysik og Nanoteknologi","C. Geofysik og Rumteknologi"], # NSA
-              ["C. Softwareteknologi","C. Matematik og Teknologi","C. Kunstig Intelligens og Data"], # SMKID
-              ["D. Process og Innovation","D. Produktion","D. Transport og Mobilitet"], # PROMO
-              ["C. Bygningsdesign","D. Bygningsdesign"], # bygdes
-              ]
 
