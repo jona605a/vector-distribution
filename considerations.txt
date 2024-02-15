@@ -3,9 +3,9 @@ When creating the cross teams (and solving these distribution problems in genera
 --- Strict Rules ---
 
 Each vector is put on one cross team.
-Each cross team gets the correct number of vectors.
-Vectors cannot be on a cross team whose KABS is the vector's study line KABS (except GE).
-There can be at most one vector from each study line on a cross team. (exceptions may apply)
+Each cross team gets the correct number of vectors. Or a little fewer, in lack of vectors. 
+Vectors cannot be on a cross team whose KABS is the vector's study line KABS (except GE on mix trips).
+There can be at most one vector from each study line on a cross team (except GE on mix trips).
 
 If there are any Ballerup vectors on a team, there has to be at least two.
 If there are any female vectors on a team, there has to be at least two.
@@ -17,7 +17,7 @@ For certain study lines, some additional rules apply for the cross teams. Some s
 --- Wants ---
 
 Each team should have a gender distribution as close as possible to the average. This also takes the KABS' gender into account.
-Each team should have at least 1 person living on campus (for vector meeting purposes). This also takes the KABS into account. *(missing)
+Each team should have at least 1 person living on campus (for vector meeting purposes). 
 
 The following vectors should be distributed evenly across teams (regardless of team size):
     Vectors with drivers' license
@@ -25,12 +25,33 @@ The following vectors should be distributed evenly across teams (regardless of t
     Vectors with sewing machines
     Vectors who smoke
 
-GE vectors should be evenly distributed across mix teams.
+GE vectors on mix trips should be evenly distributed.
 
-The average "power level" value of vectors on a team should be the same on each team. Weird name but it roughly means "extrovertedness".
+The average "power level" value of vectors on a team should be the same on each team. Weird name, but yeah. 
 
 From the vector interview, vectors give their preferences towards the different types of trips.
 The preferences are: 1) Very yes 2) Ok 3) No. In Danish: 1) Meget gerne 2) Ok 3) Nej.
 Vectors put on a trip they really want gets a positive score, an "ok" trip is neutral and vectors on a trip they don't want is a large negative.
 The same logic is true for the sizes of trips, excpet then the answers are Yes/No for each size. The team sizes are Small (6-7 vectors), Medium (8-10 vectors) and Large (11+ vectors) team.
 
+--- Buddy teams ---
+
+Certain study lines have vector meetings together and therefore two vectors from these lines should not be placed on the same cross team (except for buddy team).
+The lines who have meetings together are:
+    Cyber, C. Elektro, Bæred.En., Computer Engineering = ESCC
+    FysIng, Space = NSA
+    C. Software, Mattek, KID = SMKID
+    Process og Inno, Produktion, Transport og Mobilitet, Eksport = PROMO
+    Kemi- og Bioteknik, D. Kemiteknik, D. Førevare = BØF
+    D. Software, D. ITØ = D. Soft + ITØ
+    C. BygDesign, D. BygDesign = BygDes
+
+The above combined lines must not have two vectors on the same cross team. Except for these buddy teams:
+    NSA
+    SMKID
+    PROMO
+    BygDes
+
+--- Other ---
+
+TrustKABS are Thor and Malou.

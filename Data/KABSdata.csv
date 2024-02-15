@@ -1,41 +1,30 @@
-﻿KABS name,Study line,Male
-Anders Strøbæk,"C. Cyberteknologi,C. Elektroteknologi",1
-Anna Hjort Danielsen,C. General Engineering,0
-Anna Weilsby,C. Medicin og Teknologi,0
-August Johannsen,C. Kemi & Teknologi,1
-Benedicte Jensen,D. SUIT,0
-Ea Quie Landgreen,D. Fødevaresikkerhed og -kvalitet,0
-Emilie Rønbøg,C. Bygningsdesign,0
-Eske Haack,C. Kunstig Intelligens og Data,1
-Frederik Jørgensen,C. Produktion og Konstruktion,1
-Gustav Heron Melhus,C. Bæredygtigt Energidesign,1
-Hannah Leah Herlev Hvid,D. Eksport og Teknologi,0
-Helene Moesgaard,C. Softwareteknologi,0
-Joakim Vestergaard Rasmussen,"D. Elektrisk Energiteknologi,D. Elektroteknologi",1
-Johan Rosenkrands,D. Byggeri og Infrastruktur,1
-Jonas Bennich,D. Process og Innovation,1
-Josefine Wibom,C. Byggeteknologi,0
-Lachlan Houston,C. Matematik og Teknologi,1
-Laurits Jürs Hahn,"D. Produktion,D. Transport og Mobilitet",1
-Liam Barbosa,C. Miljøteknologi,1
-Mads Kofod Egestad,D. Maskinteknik,1
-Magnus Hilarious Ohlin Jepsen,C. Life Science og Teknologi,1
-Malou Liv Enevoldsen,"D. Kemi- og Bioteknik,D. Kemiteknik og International Business",0
-Marika Norby,C. Data Science og Management,0
-Marilouise J. Arbøl Tofte,C. Computer Engineering,0
-Niels Boelt Mortensen,C. Geofysik og Rumteknologi,1
-Oliver Sellberg,D. Softwareteknologi,1
-Sarah Ranzow,"D. Arktisk Byggeri og Infrastruktur,D. Fiskeriteknologi,C. Teknologi",0
-Sophie Plougmand,C. Design og Innovation,0
-Theis Harbers Rix,D. Byggeri og Infrastruktur,1
-Thomas Nielsen,D. IT og Økonomi,1
-Thor Deibert,C. Fysik og Nanoteknologi,1
-Tobias Bæk,D. Bygningsdesign,1
-,,
-,,
-,,
-,,
-,,
-,,
-,,
-,,
+KABS navn,Studieretning,Male,,,,,,,,,
+Adam Jabiri,C. General Engineering,1,,,,,,,,,
+Alexander Gabriel Kongstad,C. Design og Innovation,1,,,,,,,,,
+Ane Veber,C. Miljøteknologi,0,,,,,,,,,
+Annekatrine Kirketerp-Møller,C. Life Science og Teknologi,0,,,,,,,,,
+Daniel Mullenger Matthiesen,D. Byggeri og Infrastruktur,1,,,,,,,,,
+Daniel Weper Jensen,"D. IT-elektronik,D. IT og Økonomi",1,,,,,,,,,"Dette sheet skal forstås som en liste over alle retninger, og så kan jeg slå op hvem der er KABS for en given retning"
+Hans Christian Maturell Henriksen,C. Life Science og Teknologi,1,,,,,,,,,
+Helena Tejs Knudsen,C. Softwareteknologi,0,,,,,,,,,
+Johannes Skaaning Andersen,C. Kemi og Teknologi,1,,,,,,,,,
+Kamilla Gottlob Baumgarten,C. Data Science og Management,0,,,,,,,,,
+Kathrine Böech Kaas,D. Softwareteknologi,0,,,,,,,,,
+Lærke Tang Münsberg,"D. Produktion,D. Mobilitet,D. Transport og Mobilitet,D. Process og Innovation,D. Eksport og Teknologi",0,,,,,,,,,
+Laura Lund Pontoppidan,C. Fysik og Nanoteknologi,0,,,,,,,,,
+Maria Reginsdóttir Rørbo,C. Elektroteknologi,0,,,,,,,,,
+Markus Lundegaard,D. Maskinteknik,1,,,,,,,,,
+Mathias Antonius Vestergaard,D. Sundhedsteknologi,1,,,,,,,,,
+Mathias Frøjk,C. Geofysik og Rumteknologi,1,,,,,,,,,
+Mia Thao Enné,C. General Engineering,0,,,,,,,,,
+Mikkel Svendsen,"D. Elektroteknologi,D. Elektrisk Energiteknologi",1,,,,,,,,,
+Morten Werling Andreassen,"D. Kemiteknik og International Business,D. Kemi- og Bioteknik",1,,,,,,,,,
+Noel Pihl,"C. Computer Engineering,C. Cyberteknologi",1,,,,,,,,,
+Oliver Badike Hansen,C. Produktion og Konstruktion,1,,,,,,,,,
+Oliver Sorgenfrey,C. Matematik og Teknologi,1,,,,,,,,,
+Olivia Ngoc Ulrich Nielsen (Liv),C. Medicin og Teknologi,0,,,,,,,,,
+Sarah Larsen,C. Byggeteknologi,0,,,,,,,,,
+Tobias Christian Lintrup,C. Bæredygtigt Energidesign,1,,,,,,,,,
+Tobias Funk Vangsgaard,D. Fødevaresikkerhed og -kvalitet,1,,,,,,,,,
+Viktor Marius Nysøe Rehling,C. Kunstig Intelligens og Data,1,,,,,,,,,
+William Kirk Andersen,C. Bygningsdesign,1,,,,,,,,,
